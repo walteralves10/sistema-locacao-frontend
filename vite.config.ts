@@ -9,6 +9,10 @@ export default defineConfig({
     tailwindcss(),
   ],
   base: '/sistema-locacao-frontend/',
+    build: {
+    outDir: 'dist',
+    emptyOutDir: true,
+  },
   resolve: { 
     alias: {
       '@': resolve(__dirname, 'src'),
