@@ -1,4 +1,3 @@
-import React from 'react';
 import AccountsPayable from './accounts-payable/AccountsPayable';
 
 export default function Financial() {

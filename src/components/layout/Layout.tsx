@@ -10,9 +10,9 @@ export default function Layout() {
               Sistema de Locação de Impressoras
             </h1>
             <nav className="flex space-x-4">
-              <a href="/" className="text-gray-600 hover:text-gray-900">Dashboard</a>
-              <a href="/printers" className="text-gray-600 hover:text-gray-900">Impressoras</a>
-              <a href="/financial" className="text-gray-600 hover:text-gray-900">Financeiro</a>
+              <a href="/sistema-locacao-frontend/" className="text-gray-600 hover:text-gray-900">Dashboard</a>
+              <a href="/sistema-locacao-frontend/printers" className="text-gray-600 hover:text-gray-900">Impressoras</a>
+              <a href="/sistema-locacao-frontend/financial" className="text-gray-600 hover:text-gray-900">Financeiro</a>
             </nav>
           </div>
         </div>
