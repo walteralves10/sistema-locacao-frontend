@@ -8,7 +8,8 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  resolve: {
+  base: '/sistema-locacao-frontend/',
+  resolve: { 
     alias: {
       '@': resolve(__dirname, 'src'),
       '@components': resolve(__dirname, 'src/components'),
