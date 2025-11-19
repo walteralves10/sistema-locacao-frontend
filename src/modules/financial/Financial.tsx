@@ -10,3 +10,15 @@ export default function Financial() {
     </div>
   )
 }
+
+/**
+    return (
+        <div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-6">Financeiro</h1>
+
+            <section style={{ marginTop: 20 }}>
+                <Outlet />
+            </section>
+        </div>
+    );
+ */

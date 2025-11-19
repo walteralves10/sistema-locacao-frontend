@@ -1,4 +1,3 @@
-
 import { Route, Routes } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 
@@ -9,7 +8,9 @@ import Financial from '@modules/financial/Financial'
 import Services from '@modules/services/Services'
 import Recharge from '@modules/recharge/Recharge'
 import Login from '@modules/auth/Login'
-
+import AccountsPayable from '@modules/financial/screens/AccountsPayable/AccountsPayable'
+import AccountsReceivable from '@modules/financial/screens/AccountsReceivable/AccountsReceivable'
+import BankAccounts from '@modules/financial/screens/BankAccounts/BankAccounts'
 
 function App() {
 
@@ -20,7 +21,12 @@ function App() {
         <Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="printers" element={<Printers />} />
-          <Route path="financial" element={<Financial />} />
+          <Route path="financial" element={<Financial />}>
+            <Route index element={<AccountsPayable />} />
+            <Route path="accounts-payable" element={<AccountsPayable />} />
+            <Route path="accounts-receivable" element={<AccountsReceivable />} />
+            <Route path="bank-accounts" element={<BankAccounts />} />
+          </Route>
           <Route path="services" element={<Services />} />
           <Route path="recharge" element={<Recharge />} />
         </Route>
