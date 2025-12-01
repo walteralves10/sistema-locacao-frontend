@@ -8,9 +8,9 @@ import Financial from '@modules/financial/Financial'
 import Services from '@modules/services/Services'
 import Recharge from '@modules/recharge/Recharge'
 import Login from '@modules/auth/Login'
-import AccountsPayable from '@modules/financial/screens/AccountsPayable/AccountsPayable'
-import AccountsReceivable from '@modules/financial/screens/AccountsReceivable/AccountsReceivable'
-import BankAccounts from '@modules/financial/screens/BankAccounts/BankAccounts'
+import AccountsPayable from '@modules/financial/accounts-payable/AccountsPayable'
+import AccountsReceivable from '@modules/financial/accounts-receivable/AccountsReceivable'
+import BankAccounts from '@modules/financial/bank-accounts/BankAccounts'
 
 function App() {
 
