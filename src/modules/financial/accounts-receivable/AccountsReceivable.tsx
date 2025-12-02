@@ -8,8 +8,8 @@ interface Account {
   costCenter: string;
   description: string;
   amount: number;
+  bankAccount: string;
   dueDate: string;
-  status: 'pendente' | 'recebido' | 'atrasado';
 }
 
 const AccountsReceivable: React.FC = () => {
@@ -28,7 +28,7 @@ const AccountsReceivable: React.FC = () => {
         description: 'Fatura de serviço prestado',
         amount: 1200.00,
         dueDate: '2025-11-20',
-        status: 'pendente'
+        bankAccount: '1234-5',
       },
       {
         id: '2',
@@ -37,7 +37,7 @@ const AccountsReceivable: React.FC = () => {
         description: 'Pagamento de consultoria',
         amount: 3500.00,
         dueDate: '2025-11-15',
-        status: 'recebido'
+        bankAccount: '6789-0'
       },
       {
         id: '3',
@@ -46,7 +46,7 @@ const AccountsReceivable: React.FC = () => {
         description: 'Desenvolvimento de sistema',
         amount: 8500.00,
         dueDate: '2025-11-25',
-        status: 'pendente'
+        bankAccount: '1111-2'
       }
     ];
     setAccounts(mockAccounts);

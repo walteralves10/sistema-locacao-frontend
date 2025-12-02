@@ -1,6 +1,4 @@
-import React from 'react';
-import { format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import React from 'react'
 
 interface Account {
   id: string;
@@ -8,8 +6,7 @@ interface Account {
   costCenter: string;
   description: string;
   amount: number;
-  dueDate: string;
-  status: 'pendente' | 'pago' | 'atrasado';
+  bankAccount: string;
 }
 
 interface AccountsPayableTableProps {
@@ -19,21 +16,6 @@ interface AccountsPayableTableProps {
 }
 
 const AccountsPayableTable: React.FC<AccountsPayableTableProps> = ({ accounts, onEdit, onDelete }) => {
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case 'pago':
-        return 'bg-green-100 text-green-800';
-      case 'atrasado':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-yellow-100 text-yellow-800';
-    }
-  };
-
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return format(date, 'dd/MM/yyyy', { locale: ptBR });
-  };
 
   return (
     <div className="overflow-x-auto">
@@ -53,10 +35,7 @@ const AccountsPayableTable: React.FC<AccountsPayableTableProps> = ({ accounts, o
               Valor
             </th>
             <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Vencimento
-            </th>
-            <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-              Status
+              Conta Bancária
             </th>
             <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Ações
@@ -79,13 +58,8 @@ const AccountsPayableTable: React.FC<AccountsPayableTableProps> = ({ accounts, o
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">R$ {account.amount.toFixed(2)}</div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatDate(account.dueDate)}
-                </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(account.status)}`}>
-                    {account.status === 'pendente' ? 'Pendente' : account.status === 'pago' ? 'Pago' : 'Atrasado'}
-                  </span>
+                  <div className="text-sm text-gray-900">{account.bankAccount}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button

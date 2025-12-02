@@ -6,8 +6,8 @@ interface Account {
   costCenter: string;
   description: string;
   amount: number;
+  bankAccount: string;
   dueDate: string;
-  status: 'pendente' | 'recebido' | 'atrasado';
 }
 
 interface AccountsReceivableModalProps {
@@ -23,26 +23,30 @@ const AccountsReceivableModal: React.FC<AccountsReceivableModalProps> = ({ isOpe
     costCenter: '',
     description: '',
     amount: 0,
-    dueDate: '',
-    status: 'pendente'
+    bankAccount: '',
+    dueDate: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (account) {
       setFormData({
+        plan: account.plan || '',
+        costCenter: account.costCenter || '',
         description: account.description,
         amount: account.amount,
-        dueDate: account.dueDate,
-        status: account.status
+        bankAccount: account.bankAccount || '',
+        dueDate: account.dueDate
       });
     } else {
       // Reset form when opening for new account
       setFormData({
+        plan: '',
+        costCenter: '',
         description: '',
         amount: 0,
-        dueDate: '',
-        status: 'pendente'
+        bankAccount: '',
+        dueDate: ''
       });
     }
     setErrors({});
@@ -58,38 +62,42 @@ const AccountsReceivableModal: React.FC<AccountsReceivableModalProps> = ({ isOpe
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    
+
     if (!formData.plan?.trim()) {
       newErrors.plan = 'Plano de conta é obrigatório';
     }
-    
+
     if (!formData.costCenter?.trim()) {
       newErrors.costCenter = 'Centro de custos é obrigatório';
     }
-    
+
     if (!formData.description.trim()) {
       newErrors.description = 'Descrição é obrigatória';
     }
-    
+
     if (formData.amount <= 0) {
       newErrors.amount = 'Valor deve ser maior que zero';
     }
-    
+
+    if (!formData.bankAccount?.trim()) {
+      newErrors.bankAccount = 'Conta bancária é obrigatória';
+    }
+
     if (!formData.dueDate) {
       newErrors.dueDate = 'Data de vencimento é obrigatória';
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (validate()) {
       onSave({
         ...formData,
-        id: account?.id
+        id: account?.id ?? ''
       });
     }
   };
@@ -104,44 +112,48 @@ const AccountsReceivableModal: React.FC<AccountsReceivableModalProps> = ({ isOpe
             {account ? 'Editar Conta a Receber' : 'Nova Conta a Receber'}
           </h3>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="px-6 py-4 space-y-4">
           <div>
             <label htmlFor="plan" className="block text-sm font-medium text-gray-700 mb-1">
               Plano de Conta
             </label>
-            <input
-              type="text"
+            <select
               id="plan"
               name="plan"
               value={formData.plan}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                errors.plan ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
-              placeholder="Plano de conta"
-            />
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.plan ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
+            >
+              <option value="">Selecione o plano</option>
+              <option value="1.1.1.01">1.1.1.01 - Energia Elétrica</option>
+              <option value="1.1.2.01">1.1.2.01 - Aluguel</option>
+              <option value="1.1.3.01">1.1.3.01 - Internet</option>
+            </select>
             {errors.plan && <p className="mt-1 text-sm text-red-600">{errors.plan}</p>}
           </div>
-          
+
           <div>
             <label htmlFor="costCenter" className="block text-sm font-medium text-gray-700 mb-1">
               Centro de Custos
             </label>
-            <input
-              type="text"
+            <select
               id="costCenter"
               name="costCenter"
               value={formData.costCenter}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                errors.costCenter ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
-              placeholder="Centro de custos"
-            />
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.costCenter ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
+            >
+              <option value="">Selecione o centro de custos</option>
+              <option value="Administrativo">Administrativo</option>
+              <option value="TI">TI</option>
+              <option value="Financeiro">Financeiro</option>
+            </select>
             {errors.costCenter && <p className="mt-1 text-sm text-red-600">{errors.costCenter}</p>}
           </div>
-          
+
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
               Descrição
@@ -152,14 +164,13 @@ const AccountsReceivableModal: React.FC<AccountsReceivableModalProps> = ({ isOpe
               name="description"
               value={formData.description}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                errors.description ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.description ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
               placeholder="Descrição da conta"
             />
             {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description}</p>}
           </div>
-          
+
           <div>
             <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
               Valor (R$)
@@ -172,14 +183,33 @@ const AccountsReceivableModal: React.FC<AccountsReceivableModalProps> = ({ isOpe
               onChange={handleChange}
               min="0"
               step="0.01"
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                errors.amount ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.amount ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
               placeholder="0.00"
             />
             {errors.amount && <p className="mt-1 text-sm text-red-600">{errors.amount}</p>}
           </div>
-          
+
+          <div>
+            <label htmlFor="bankAccount" className="block text-sm font-medium text-gray-700 mb-1">
+              Conta Bancária
+            </label>
+            <select
+              id="bankAccount"
+              name="bankAccount"
+              value={formData.bankAccount}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.bankAccount ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
+            >
+              <option value="">Selecione a conta bancária</option>
+              <option value="1234-5">1234-5 - Banco do Brasil</option>
+              <option value="6789-0">6789-0 - Bradesco</option>
+              <option value="1111-2">1111-2 - Santander</option>
+            </select>
+            {errors.bankAccount && <p className="mt-1 text-sm text-red-600">{errors.bankAccount}</p>}
+          </div>
+
           <div>
             <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 mb-1">
               Data de Vencimento
@@ -190,30 +220,12 @@ const AccountsReceivableModal: React.FC<AccountsReceivableModalProps> = ({ isOpe
               name="dueDate"
               value={formData.dueDate}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                errors.dueDate ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${errors.dueDate ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+                }`}
             />
             {errors.dueDate && <p className="mt-1 text-sm text-red-600">{errors.dueDate}</p>}
           </div>
-          
-          <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-              Status
-            </label>
-            <select
-              id="status"
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            >
-              <option value="pendente">Pendente</option>
-              <option value="recebido">Recebido</option>
-              <option value="atrasado">Atrasado</option>
-            </select>
-          </div>
-          
+
           <div className="flex justify-end space-x-3 pt-4">
             <button
               type="button"

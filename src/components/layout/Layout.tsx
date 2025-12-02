@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { Outlet, useNavigate, type To } from 'react-router-dom'
-import { LogOut, User, Home, Printer, DollarSign, Wrench, Zap, Menu, X, ChevronDown } from 'lucide-react'
+import { LogOut, User, Home, Printer, DollarSign, Wrench, Zap, Menu, X, ChevronDown, Settings, FileUser } from 'lucide-react'
 
 export default function Layout() {
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [financialOpen, setFinancialOpen] = useState(false)
   const [registrationOpen, setRegistrationOpen] = useState(false)
+  const [configOpen, setConfigOpen] = useState(false)
   const navigate = useNavigate()
 
   const navigationLinks = [
@@ -25,6 +26,11 @@ export default function Layout() {
     { href: '/registration/categories', label: 'Categorias' },
     { href: '/registration/clients', label: 'Clientes' },
     { href: '/registration/suppliers', label: 'Fornecedores' },
+  ]
+
+    const configLinks = [
+    { href: '/config/plan-accounts', label: 'Plano de contas' },
+    { href: '/config/cost-center', label: 'Centro de custo' },
   ]
 
   useEffect(() => {
@@ -99,7 +105,7 @@ export default function Layout() {
               />
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Financeiro Dropdown Menu */}
             {financialOpen && (
               <div className="mt-1 ml-4 space-y-1 border-l-2 border-primary-200 pl-4">
                 {financialLinks.map((link) => (
@@ -122,7 +128,7 @@ export default function Layout() {
               className="w-full flex items-center justify-between gap-3 px-4 py-3 text-gray-900 rounded-lg hover:bg-gray-50 hover:text-gray-600 transition-colors"
             >
               <div className="flex items-center gap-3 cursor-pointer">
-                <DollarSign className="w-5 h-5" />
+                <FileUser className="w-5 h-5" />
                 <span className="font-medium">Cadastro</span>
               </div>
               <ChevronDown
@@ -132,10 +138,43 @@ export default function Layout() {
               />
             </button>
 
-            {/* Dropdown Menu */}
+            {/* Cadastros Dropdown Menu */}
             {registrationOpen && (
               <div className="mt-1 ml-4 space-y-1 border-l-2 border-primary-200 pl-4">
                 {registrationLinks.map((link) => (
+                  <button
+                    key={link.href}
+                    onClick={() => handleLink(link.href)}
+                    className="w-full text-left px-3 py-2 text-sm text-gray-900 rounded-lg hover:bg-gray-50 hover:text-gray-600 transition-colors"
+                  >
+                    {link.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Configurações Dropdown */}
+          <div className="relative">
+            <button
+              onClick={() => setConfigOpen(!configOpen)}
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 text-gray-900 rounded-lg hover:bg-gray-50 hover:text-gray-600 transition-colors"
+            >
+              <div className="flex items-center gap-3 cursor-pointer">
+                <Settings className="w-5 h-5" />
+                <span className="font-medium">Configuração</span>
+              </div>
+              <ChevronDown
+                className={`w-4 h-4 transition-transform duration-200 ${
+                  configOpen ? 'rotate-180' : ''
+                }`}
+              />
+            </button>
+
+            {/* Configurações Dropdown Menu */}
+            {configOpen && (
+              <div className="mt-1 ml-4 space-y-1 border-l-2 border-primary-200 pl-4">
+                {configLinks.map((link) => (
                   <button
                     key={link.href}
                     onClick={() => handleLink(link.href)}

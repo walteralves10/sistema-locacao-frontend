@@ -6,8 +6,7 @@ interface Account {
   costCenter?: string;
   description: string;
   amount: number;
-  dueDate: string;
-  status: 'pendente' | 'pago' | 'atrasado';
+  bankAccount?: string;
 }
 
 interface AccountsPayableModalProps {
@@ -23,26 +22,27 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
     costCenter: '',
     description: '',
     amount: 0,
-    dueDate: '',
-    status: 'pendente'
+    bankAccount: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (account) {
       setFormData({
+        plan: account.plan || '',
+        costCenter: account.costCenter || '',
         description: account.description,
         amount: account.amount,
-        dueDate: account.dueDate,
-        status: account.status
+        bankAccount: account.bankAccount || ''
       });
     } else {
       // Reset form when opening for new account
       setFormData({
+        plan: '',
+        costCenter: '',
         description: '',
         amount: 0,
-        dueDate: '',
-        status: 'pendente'
+        bankAccount: ''
       });
     }
     setErrors({});
@@ -75,8 +75,8 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
       newErrors.amount = 'Valor deve ser maior que zero';
     }
     
-    if (!formData.dueDate) {
-      newErrors.dueDate = 'Data de vencimento é obrigatória';
+    if (!formData.bankAccount?.trim()) {
+      newErrors.bankAccount = 'Conta bancária é obrigatória';
     }
     
     setErrors(newErrors);
@@ -110,8 +110,7 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
             <label htmlFor="plan" className="block text-sm font-medium text-gray-700 mb-1">
               Plano de Conta
             </label>
-            <input
-              type="text"
+            <select
               id="plan"
               name="plan"
               value={formData.plan}
@@ -119,8 +118,12 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                 errors.plan ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
               }`}
-              placeholder="Plano de conta"
-            />
+            >
+              <option value="">Selecione o plano</option>
+              <option value="1.1.1.01">1.1.1.01 - Energia Elétrica</option>
+              <option value="1.1.2.01">1.1.2.01 - Aluguel</option>
+              <option value="1.1.3.01">1.1.3.01 - Internet</option>
+            </select>
             {errors.plan && <p className="mt-1 text-sm text-red-600">{errors.plan}</p>}
           </div>
           
@@ -128,8 +131,7 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
             <label htmlFor="costCenter" className="block text-sm font-medium text-gray-700 mb-1">
               Centro de Custos
             </label>
-            <input
-              type="text"
+            <select
               id="costCenter"
               name="costCenter"
               value={formData.costCenter}
@@ -137,8 +139,12 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
               className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
                 errors.costCenter ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
               }`}
-              placeholder="Centro de custos"
-            />
+            >
+              <option value="">Selecione o centro de custos</option>
+              <option value="Administrativo">Administrativo</option>
+              <option value="TI">TI</option>
+              <option value="Financeiro">Financeiro</option>
+            </select>
             {errors.costCenter && <p className="mt-1 text-sm text-red-600">{errors.costCenter}</p>}
           </div>
           
@@ -181,37 +187,24 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
           </div>
           
           <div>
-            <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 mb-1">
-              Data de Vencimento
-            </label>
-            <input
-              type="date"
-              id="dueDate"
-              name="dueDate"
-              value={formData.dueDate}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                errors.dueDate ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
-              }`}
-            />
-            {errors.dueDate && <p className="mt-1 text-sm text-red-600">{errors.dueDate}</p>}
-          </div>
-          
-          <div>
-            <label htmlFor="status" className="block text-sm font-medium text-gray-700 mb-1">
-              Status
+            <label htmlFor="bankAccount" className="block text-sm font-medium text-gray-700 mb-1">
+              Conta Bancária
             </label>
             <select
-              id="status"
-              name="status"
-              value={formData.status}
+              id="bankAccount"
+              name="bankAccount"
+              value={formData.bankAccount}
               onChange={handleChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                errors.bankAccount ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+              }`}
             >
-              <option value="pendente">Pendente</option>
-              <option value="pago">Pago</option>
-              <option value="atrasado">Atrasado</option>
+              <option value="">Selecione a conta bancária</option>
+              <option value="1234-5">1234-5 - Banco do Brasil</option>
+              <option value="6789-0">6789-0 - Bradesco</option>
+              <option value="1111-2">1111-2 - Santander</option>
             </select>
+            {errors.bankAccount && <p className="mt-1 text-sm text-red-600">{errors.bankAccount}</p>}
           </div>
           
           <div className="flex justify-end space-x-3 pt-4">
