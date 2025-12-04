@@ -1,4 +1,5 @@
 import React from 'react'
+import { Edit, Trash2 } from 'lucide-react'
 
 interface CostCenterItem {
   id: string;
@@ -50,15 +51,19 @@ const CostCenterTable: React.FC<CostCenterTableProps> = ({ centers, onEdit, onDe
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     onClick={() => onEdit(center)}
+                    aria-label="Editar centro de custo"
+                    title="Editar"
                     className="text-indigo-600 hover:text-indigo-900 mr-3"
                   >
-                    Editar
+                    <Edit size={16} />
                   </button>
                   <button
                     onClick={() => onDelete(center.id)}
+                    aria-label="Excluir centro de custo"
+                    title="Excluir"
                     className="text-red-600 hover:text-red-900"
                   >
-                    Excluir
+                    <Trash2 size={16} />
                   </button>
                 </td>
               </tr>

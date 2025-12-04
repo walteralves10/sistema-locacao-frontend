@@ -1,4 +1,5 @@
 import React from 'react'
+import { Edit, Trash2 } from 'lucide-react'
 
 interface BankAccount {
   id: string;
@@ -49,15 +50,19 @@ const BankAccountsTable: React.FC<BankAccountsTableProps> = ({ accounts, onEdit,
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     onClick={() => onEdit(account)}
+                    aria-label="Editar conta bancária"
+                    title="Editar"
                     className="text-indigo-600 hover:text-indigo-900 mr-3"
                   >
-                    Editar
+                    <Edit size={16} />
                   </button>
                   <button
                     onClick={() => onDelete(account.id)}
+                    aria-label="Excluir conta bancária"
+                    title="Excluir"
                     className="text-red-600 hover:text-red-900"
                   >
-                    Excluir
+                    <Trash2 size={16} />
                   </button>
                 </td>
               </tr>
