@@ -1,34 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import BankAccountsTable from './BankAccountsTable';
-import BankAccountsModal from './BankAccountsModal';
-import { mockBankAccounts } from './mocks';
+import PlanAccountTable from './PlanAccountTable';
+import PlanAccountModal from './PlanAccountModal';
+import { mockPlanAccounts } from './mocks';
 
-interface BankAccount {
+interface PlanAccountItem {
   id: string;
   description: string;
-  agency: string;
-  balance: number;
-  pix?: boolean;
-  boleto?: boolean;
-  card?: boolean;
+  type: 'revenue' | 'expense';
 }
 
-const BankAccounts: React.FC = () => {
-  const [accounts, setAccounts] = useState<BankAccount[]>([]);
+const PlanAccount: React.FC = () => {
+  const [accounts, setAccounts] = useState<PlanAccountItem[]>(mockPlanAccounts);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingAccount, setEditingAccount] = useState<BankAccount | null>(null);
+  const [editingAccount, setEditingAccount] = useState<PlanAccountItem | null>(null);
 
-  // Carregar contas bancárias (usando mocks)
+  // Carregar planos de conta (simulação com localStorage ou mocks)
   useEffect(() => {
-    setAccounts(mockBankAccounts);
+    const savedAccounts = localStorage.getItem('accounts');
+    if (savedAccounts) {
+      try {
+        const parsed = JSON.parse(savedAccounts);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setAccounts(parsed);
+        }
+      } catch (e) {
+        // Se houver erro ao parsear, usar mocks
+        setAccounts(mockPlanAccounts);
+      }
+    }
   }, []);
+
+  // Salvar no localStorage sempre que a lista mudar
+  useEffect(() => {
+    localStorage.setItem('accounts', JSON.stringify(accounts));
+  }, [accounts]);
 
   const openCreateModal = () => {
     setEditingAccount(null);
     setIsModalOpen(true);
   };
 
-  const openEditModal = (account: BankAccount) => {
+  const openEditModal = (account: PlanAccountItem) => {
     setEditingAccount(account);
     setIsModalOpen(true);
   };
@@ -38,18 +50,13 @@ const BankAccounts: React.FC = () => {
     setEditingAccount(null);
   };
 
-  const handleSaveAccount = (account: Omit<BankAccount, 'id'> & { id?: string }) => {
-    const accountWithId: BankAccount = {
-      ...account,
-      id: account.id || Date.now().toString()
-    } as BankAccount;
-
+  const handleSaveAccount = (account: PlanAccountItem) => {
     if (editingAccount) {
       // Atualizar conta existente
-      setAccounts(accounts.map(acc => acc.id === accountWithId.id ? accountWithId : acc));
+      setAccounts(accounts.map(acc => acc.id === account.id ? account : acc));
     } else {
       // Adicionar nova conta
-      setAccounts([...accounts, accountWithId]);
+      setAccounts([...accounts, { ...account, id: Date.now().toString() }]);
     }
     closeModal();
   };
@@ -61,7 +68,7 @@ const BankAccounts: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold text-gray-900">Contas Bancárias</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Plano de Contas</h1>
         <button
           onClick={openCreateModal}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center"
@@ -69,19 +76,19 @@ const BankAccounts: React.FC = () => {
           <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
           </svg>
-          Nova Conta
+          Novo
         </button>
       </div>
 
       <div className="bg-white rounded-lg shadow-sm border p-6">
-        <BankAccountsTable 
+        <PlanAccountTable 
           accounts={accounts} 
           onEdit={openEditModal}
           onDelete={handleDeleteAccount}
         />
       </div>
 
-      <BankAccountsModal
+      <PlanAccountModal
         isOpen={isModalOpen}
         onClose={closeModal}
         onSave={handleSaveAccount}
@@ -91,4 +98,4 @@ const BankAccounts: React.FC = () => {
   );
 };
 
-export default BankAccounts;
+export default PlanAccount;

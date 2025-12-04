@@ -20,6 +20,8 @@ export default function Layout() {
     { href: '/financial/accounts-payable', label: 'Contas a Pagar' },
     { href: '/financial/accounts-receivable', label: 'Contas a Receber' },
     { href: '/financial/bank-accounts', label: 'Contas Bancárias' },
+    { href: '/financial/plan-accounts', label: 'Plano de Contas' },
+    { href: '/financial/cost-center', label: 'Centro de Custos' },
   ]
 
   const registrationLinks = [
@@ -29,8 +31,7 @@ export default function Layout() {
   ]
 
     const configLinks = [
-    { href: '/config/plan-accounts', label: 'Plano de contas' },
-    { href: '/config/cost-center', label: 'Centro de custo' },
+    // Configurações será usado para outras funcionalidades futuras
   ]
 
   useEffect(() => {
@@ -72,7 +73,7 @@ export default function Layout() {
         </div>
 
         {/* Navigation Links */}
-        <nav className="flex-1 px-4 py-6 space-y-2">
+        <nav className="flex-1 px-4 py-6 space-y-2 overflow-y-auto">
           {navigationLinks.map((link) => {
             const Icon = link.icon
             return (

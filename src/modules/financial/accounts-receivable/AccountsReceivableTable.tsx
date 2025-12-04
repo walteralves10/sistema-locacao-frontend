@@ -1,6 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { PenBox, Trash2 } from 'lucide-react';
 
 interface Account {
   id: string;
@@ -16,9 +17,10 @@ interface AccountsReceivableTableProps {
   accounts: Account[];
   onEdit: (account: Account) => void;
   onDelete: (id: string) => void;
+  onPay: (account: Account) => void;
 }
 
-const AccountsReceivableTable: React.FC<AccountsReceivableTableProps> = ({ accounts, onEdit, onDelete }) => {
+const AccountsReceivableTable: React.FC<AccountsReceivableTableProps> = ({ accounts, onEdit, onDelete, onPay }) => {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -67,7 +69,11 @@ const AccountsReceivableTable: React.FC<AccountsReceivableTableProps> = ({ accou
                   <div className="text-sm font-medium text-gray-900">{account.description}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">R$ {account.amount.toFixed(2)}</div>
+                  {account.amount === 0 ? (
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">Pago</span>
+                  ) : (
+                    <div className="text-sm text-gray-900">R$ {account.amount.toFixed(2)}</div>
+                  )}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="text-sm text-gray-900">{account.bankAccount}</div>
@@ -80,13 +86,19 @@ const AccountsReceivableTable: React.FC<AccountsReceivableTableProps> = ({ accou
                     onClick={() => onEdit(account)}
                     className="text-indigo-600 hover:text-indigo-900 mr-3"
                   >
-                    Editar
+                    <PenBox className="inline-block w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => onPay(account)}
+                    className="text-green-600 hover:text-green-900 mr-3"
+                  >
+                    Receber conta
                   </button>
                   <button
                     onClick={() => onDelete(account.id)}
                     className="text-red-600 hover:text-red-900"
                   >
-                    Excluir
+                    <Trash2 className="inline-block w-4 h-4" />
                   </button>
                 </td>
               </tr>

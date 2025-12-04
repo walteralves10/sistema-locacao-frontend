@@ -1,51 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import AccountsPayableTable from './AccountsPayableTable';
 import AccountsPayableModal from './AccountsPayableModal';
+import PayModal from '../../../components/PayModal';
+import { addPayment } from '../payments/storage';
+import { Plus } from 'lucide-react';
+import { mockAccountsPayable } from './mocks';
 
 interface Account {
   id: string;
   plan: string;
   costCenter: string;
   description: string;
-  amount: number;
+  amount: number; // remaining amount
   bankAccount: string;
+  paid?: boolean;
 }
 
 const AccountsPayable: React.FC = () => {
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
+  const [isPayOpen, setIsPayOpen] = useState(false);
+  const [payAccount, setPayAccount] = useState<Account | null>(null);
 
-  // Carregar contas a pagar (simulação)
+  // Carregar contas a pagar (usando mocks)
   useEffect(() => {
-    // Simulando dados de contas a pagar
-    const mockAccounts: Account[] = [
-      {
-        id: '1',
-        plan: '1.1.1.01',
-        costCenter: 'Administrativo',
-        description: 'Fatura de energia elétrica',
-        amount: 250.00,
-        bankAccount: '1234-5'
-      },
-      {
-        id: '2',
-        plan: '1.1.2.01',
-        costCenter: 'Administrativo',
-        description: 'Aluguel do escritório',
-        amount: 5000.00,
-        bankAccount: '6789-0'
-      },
-      {
-        id: '3',
-        plan: '1.1.3.01',
-        costCenter: 'TI',
-        description: 'Fatura de internet',
-        amount: 150.00,
-        bankAccount: '1111-2'
-      }
-    ];
-    setAccounts(mockAccounts);
+    setAccounts(mockAccountsPayable);
   }, []);
 
   const openCreateModal = () => {
@@ -63,19 +43,54 @@ const AccountsPayable: React.FC = () => {
     setEditingAccount(null);
   };
 
-  const handleSaveAccount = (account: Account) => {
+  const handleSaveAccount = (account: Omit<Account, 'id'> & { id?: string }) => {
+    const accountWithId: Account = {
+      ...account,
+      id: account.id || Date.now().toString(),
+    };
+    
     if (editingAccount) {
       // Atualizar conta existente
-      setAccounts(accounts.map(acc => acc.id === account.id ? account : acc));
+      setAccounts(accounts.map(acc => acc.id === accountWithId.id ? accountWithId : acc));
     } else {
       // Adicionar nova conta
-      setAccounts([...accounts, { ...account, id: Date.now().toString() }]);
+      setAccounts([...accounts, accountWithId]);
     }
     closeModal();
   };
 
   const handleDeleteAccount = (id: string) => {
     setAccounts(accounts.filter(account => account.id !== id));
+  };
+
+  const openPayModal = (account: Account) => {
+    setPayAccount(account);
+    setIsPayOpen(true);
+  };
+
+  const closePayModal = () => {
+    setIsPayOpen(false);
+    setPayAccount(null);
+  };
+
+  const handleConfirmPayment = (accountId: string, payment: { type: 'full' | 'partial'; paymentDate: string; amount: number; paymentMethod: string; bankAccountId?: string; }) => {
+    const id = Date.now().toString();
+    addPayment({
+      id,
+      accountId,
+      type: payment.type,
+      paymentDate: payment.paymentDate,
+      amount: payment.amount,
+      paymentMethod: payment.paymentMethod as any,
+      bankAccountId: payment.bankAccountId,
+    });
+
+    setAccounts(prev => prev.map(acc => {
+      if (acc.id !== accountId) return acc;
+      if (payment.type === 'full') return { ...acc, amount: 0, paid: true };
+      const newAmount = Number((acc.amount - payment.amount).toFixed(2));
+      return { ...acc, amount: newAmount, paid: newAmount <= 0 };
+    }));
   };
 
   return (
@@ -86,9 +101,7 @@ const AccountsPayable: React.FC = () => {
           onClick={openCreateModal}
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md transition-colors duration-200 flex items-center"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-            <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
-          </svg>
+          <Plus className="w-4 h-4 mr-2" />
           Nova Conta
         </button>
       </div>
@@ -98,6 +111,7 @@ const AccountsPayable: React.FC = () => {
           accounts={accounts} 
           onEdit={openEditModal}
           onDelete={handleDeleteAccount}
+            onPay={openPayModal}
         />
       </div>
 
@@ -106,6 +120,15 @@ const AccountsPayable: React.FC = () => {
         onClose={closeModal}
         onSave={handleSaveAccount}
         account={editingAccount}
+      />
+
+      <PayModal
+        title="Pagar Conta"
+        isOpen={isPayOpen}
+        onClose={closePayModal}
+        accountId={payAccount?.id ?? null}
+        accountAmount={payAccount?.amount}
+        onPay={handleConfirmPayment}
       />
     </div>
   );

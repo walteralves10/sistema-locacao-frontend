@@ -11,8 +11,8 @@ import Login from '@modules/auth/Login'
 import AccountsPayable from '@modules/financial/accounts-payable/AccountsPayable'
 import AccountsReceivable from '@modules/financial/accounts-receivable/AccountsReceivable'
 import BankAccounts from '@modules/financial/bank-accounts/BankAccounts'
-import CostCenter from '@modules/config/cost-center/CostCenter'
-import PlanAccount from '@modules/config/plan-accounts/PlanAccount'
+import PlanAccount from '@modules/financial/plan-accounts/PlanAccount'
+import CostCenter from '@modules/financial/cost-center/CostCenter'
 
 function App() {
 
@@ -28,8 +28,6 @@ function App() {
             <Route path="accounts-payable" element={<AccountsPayable />} />
             <Route path="accounts-receivable" element={<AccountsReceivable />} />
             <Route path="bank-accounts" element={<BankAccounts />} />
-          </Route>
-          <Route path="config">
             <Route path="plan-accounts" element={<PlanAccount />} />
             <Route path="cost-center" element={<CostCenter />} />
           </Route>

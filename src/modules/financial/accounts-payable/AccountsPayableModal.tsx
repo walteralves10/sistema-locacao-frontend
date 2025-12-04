@@ -7,6 +7,8 @@ interface Account {
   description: string;
   amount: number;
   bankAccount?: string;
+  interest?: number;
+  paymentMethod?: string;
 }
 
 interface AccountsPayableModalProps {
@@ -22,7 +24,9 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
     costCenter: '',
     description: '',
     amount: 0,
-    bankAccount: ''
+    bankAccount: '',
+    interest: 0,
+    paymentMethod: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -33,7 +37,9 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
         costCenter: account.costCenter || '',
         description: account.description,
         amount: account.amount,
-        bankAccount: account.bankAccount || ''
+        bankAccount: account.bankAccount || '',
+        interest: account.interest || 0,
+        paymentMethod: account.paymentMethod || ''
       });
     } else {
       // Reset form when opening for new account
@@ -42,17 +48,18 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
         costCenter: '',
         description: '',
         amount: 0,
-        bankAccount: ''
+        bankAccount: '',
+        interest: 0,
+        paymentMethod: ''
       });
     }
-    setErrors({});
   }, [account, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'amount' ? parseFloat(value) || 0 : value
+      [name]: (name === 'amount' || name === 'interest') ? parseFloat(value) || 0 : value
     }));
   };
 
@@ -98,7 +105,7 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+      <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-auto">
         <div className="px-6 py-4 border-b border-gray-200">
           <h3 className="text-lg font-medium text-gray-900">
             {account ? 'Editar Conta a Pagar' : 'Nova Conta a Pagar'}
@@ -201,9 +208,53 @@ const AccountsPayableModal: React.FC<AccountsPayableModalProps> = ({ isOpen, onC
             >
               <option value="">Selecione a conta bancária</option>
               <option value="1234-5">1234-5 - Banco do Brasil</option>
-              <option value="6789-0">6789-0 - Bradesco</option>
-              <option value="1111-2">1111-2 - Santander</option>
             </select>
+          </div>
+          
+          <div>
+            <label htmlFor="interest" className="block text-sm font-medium text-gray-700 mb-1">
+              Juros (%)
+            </label>
+            <input
+              type="number"
+              id="interest"
+              name="interest"
+              value={formData.interest || ''}
+              onChange={handleChange}
+              min="0"
+              step="0.01"
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                errors.interest ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+              }`}
+              placeholder="0.00"
+            />
+            {errors.interest && <p className="mt-1 text-sm text-red-600">{errors.interest}</p>}
+          </div>
+
+          <div>
+            <label htmlFor="paymentMethod" className="block text-sm font-medium text-gray-700 mb-1">
+              Forma de Pagamento
+            </label>
+            <select
+              id="paymentMethod"
+              name="paymentMethod"
+              value={formData.paymentMethod}
+              onChange={handleChange}
+              className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                errors.paymentMethod ? 'border-red-500 focus:ring-red-500' : 'border-gray-300 focus:ring-blue-500'
+              }`}
+            >
+              <option value="">Selecione a forma de pagamento</option>
+              <option value="pix">Pix</option>
+              <option value="boleto">Boleto</option>
+              <option value="credito">Crédito</option>
+              <option value="debito">Débito</option>
+              <option value="transferencia">Transferência</option>
+            </select>
+            {errors.paymentMethod && <p className="mt-1 text-sm text-red-600">{errors.paymentMethod}</p>}
+          </div>
+          
+          <div className="flex justify-end space-x-3 pt-4">
             {errors.bankAccount && <p className="mt-1 text-sm text-red-600">{errors.bankAccount}</p>}
           </div>
           
