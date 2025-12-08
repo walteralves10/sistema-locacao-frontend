@@ -13,6 +13,7 @@ import AccountsReceivable from '@modules/financial/accounts-receivable/AccountsR
 import BankAccounts from '@modules/financial/bank-accounts/BankAccounts'
 import PlanAccount from '@modules/financial/plan-accounts/PlanAccount'
 import CostCenter from '@modules/financial/cost-center/CostCenter'
+import CashPlan from '@modules/financial/cash-plan/CashPlan'
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
             <Route path="accounts-payable" element={<AccountsPayable />} />
             <Route path="accounts-receivable" element={<AccountsReceivable />} />
             <Route path="bank-accounts" element={<BankAccounts />} />
+            <Route path="cash-plan" element={<CashPlan />} />
             <Route path="plan-accounts" element={<PlanAccount />} />
             <Route path="cost-center" element={<CostCenter />} />
           </Route>

@@ -20,6 +20,7 @@ export default function Layout() {
     { href: '/financial/accounts-payable', label: 'Contas a Pagar' },
     { href: '/financial/accounts-receivable', label: 'Contas a Receber' },
     { href: '/financial/bank-accounts', label: 'Contas Bancárias' },
+    { href: '/financial/cash-plan', label: 'Plano de Caixa' },
     { href: '/financial/plan-accounts', label: 'Plano de Contas' },
     { href: '/financial/cost-center', label: 'Centro de Custos' },
   ]
