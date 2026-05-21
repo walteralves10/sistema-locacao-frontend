@@ -11,9 +11,9 @@ export default function Layout() {
 
   const navigationLinks = [
     { href: '/', label: 'Dashboard', icon: Home },
-    { href: '/sistema-locacao-frontend/printers', label: 'Impressoras', icon: Printer },
-    { href: '/sistema-locacao-frontend/services', label: 'Serviços', icon: Wrench },
-    { href: '/sistema-locacao-frontend/recharge', label: 'Recarga', icon: Zap },
+    { href: '/printers', label: 'Impressoras', icon: Printer },
+    { href: '/services', label: 'Serviços', icon: Wrench },
+    { href: '/recharge', label: 'Recarga', icon: Zap },
   ]
 
   const financialLinks = [
@@ -78,15 +78,14 @@ export default function Layout() {
           {navigationLinks.map((link) => {
             const Icon = link.icon
             return (
-              <a
+              <button
                 key={link.href}
-                href={link.href}
-                onClick={() => setSidebarOpen(false)}
-                className="flex items-center gap-3 px-4 py-3 text-gray-900 rounded-lg hover:bg-gray-50 hover:text-gray-600 transition-colors"
+                onClick={() => handleLink(link.href)}
+                className="w-full flex items-center gap-3 px-4 py-3 text-gray-900 rounded-lg hover:bg-gray-50 hover:text-gray-600 transition-colors"
               >
                 <Icon className="w-5 h-5" />
                 <span className="font-medium">{link.label}</span>
-              </a>
+              </button>
             )
           })}
 

@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  base: '/sistema-locacao-frontend/',
+  base: '/',
     build: {
     outDir: 'dist',
     emptyOutDir: true,
