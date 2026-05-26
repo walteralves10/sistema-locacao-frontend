@@ -1,7 +1,7 @@
 import React from 'react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { PenBox, Trash2 } from 'lucide-react';
+import { PenBox, Trash2, ArrowLeftRight } from 'lucide-react';
 
 interface Account {
   id: string;
@@ -11,6 +11,7 @@ interface Account {
   amount: number;
   dueDate: string;
   bankAccount: string;
+  paid?: boolean;
 }
 
 interface AccountsReceivableTableProps {
@@ -18,10 +19,10 @@ interface AccountsReceivableTableProps {
   onEdit: (account: Account) => void;
   onDelete: (id: string) => void;
   onPay: (account: Account) => void;
+  onStorno?: (account: Account) => void;
 }
 
-const AccountsReceivableTable: React.FC<AccountsReceivableTableProps> = ({ accounts, onEdit, onDelete, onPay }) => {
-
+const AccountsReceivableTable: React.FC<AccountsReceivableTableProps> = ({ accounts, onEdit, onDelete, onPay, onStorno }) => {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return format(date, 'dd/MM/yyyy', { locale: ptBR });
@@ -90,12 +91,23 @@ const AccountsReceivableTable: React.FC<AccountsReceivableTableProps> = ({ accou
                   >
                     <PenBox className="inline-block w-4 h-4" />
                   </button>
-                  <button
-                    onClick={() => onPay(account)}
-                    className="text-green-600 hover:text-green-900 mr-3"
-                  >
-                    Receber conta
-                  </button>
+                  {account.amount === 0 ? (
+                    <button
+                      onClick={() => onStorno?.(account)}
+                      aria-label="Estornar conta"
+                      title="Estornar"
+                      className="text-orange-600 hover:text-orange-900 mr-3"
+                    >
+                      <ArrowLeftRight className="inline-block w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => onPay(account)}
+                      className="text-green-600 hover:text-green-900 mr-3"
+                    >
+                      Receber conta
+                    </button>
+                  )}
                   <button
                     onClick={() => onDelete(account.id)}
                     aria-label="Excluir conta a receber"

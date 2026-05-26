@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import AccountsReceivableTable from './AccountsReceivableTable';
 import AccountsReceivableModal from './AccountsReceivableModal';
 import PayModal from '../../../components/PayModal';
-import { addPayment } from '../payments/storage';
+import StornoModal from '../../../components/StornoModal';
+import { addPayment, getPayments } from '../payments/storage';
+import { addReversal } from '../payments/reversalStorage';
 import { Plus } from 'lucide-react';
 import { mockAccountsReceivable } from './mocks';
 
@@ -11,7 +13,8 @@ interface Account {
   plan: string;
   costCenter: string;
   description: string;
-  amount: number; // remaining amount
+  amount: number;
+  originalAmount?: number;
   bankAccount: string;
   dueDate: string;
   paid?: boolean;
@@ -23,8 +26,9 @@ const AccountsReceivable: React.FC = () => {
   const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const [isPayOpen, setIsPayOpen] = useState(false);
   const [payAccount, setPayAccount] = useState<Account | null>(null);
+  const [isStornoOpen, setIsStornoOpen] = useState(false);
+  const [stornoAccount, setStornoAccount] = useState<Account | null>(null);
 
-  // Carregar contas a receber (usando mocks)
   useEffect(() => {
     setAccounts(mockAccountsReceivable);
   }, []);
@@ -45,12 +49,15 @@ const AccountsReceivable: React.FC = () => {
   };
 
   const handleSaveAccount = (account: Account) => {
+    const accountWithOriginal: Account = {
+      ...account,
+      originalAmount: account.amount,
+    };
+
     if (editingAccount) {
-      // Atualizar conta existente
-      setAccounts(accounts.map(acc => acc.id === account.id ? account : acc));
+      setAccounts(accounts.map(acc => acc.id === account.id ? accountWithOriginal : acc));
     } else {
-      // Adicionar nova conta
-      setAccounts([...accounts, { ...account, id: Date.now().toString() }]);
+      setAccounts([...accounts, { ...accountWithOriginal, id: Date.now().toString() }]);
     }
     closeModal();
   };
@@ -83,10 +90,50 @@ const AccountsReceivable: React.FC = () => {
 
     setAccounts(prev => prev.map(acc => {
       if (acc.id !== accountId) return acc;
-      if (payment.type === 'full') return { ...acc, amount: 0, paid: true };
+      const originalAmount = acc.originalAmount ?? acc.amount;
+      if (payment.type === 'full') return { ...acc, amount: 0, paid: true, originalAmount };
       const newAmount = Number((acc.amount - payment.amount).toFixed(2));
-      return { ...acc, amount: newAmount, paid: newAmount <= 0 };
+      return { ...acc, amount: newAmount, paid: newAmount <= 0, originalAmount };
     }));
+  };
+
+  const openStornoModal = (account: Account) => {
+    setStornoAccount(account);
+    setIsStornoOpen(true);
+  };
+
+  const closeStornoModal = () => {
+    setIsStornoOpen(false);
+    setStornoAccount(null);
+  };
+
+  const handleConfirmStorno = (accountId: string, reason: string) => {
+    const account = accounts.find(a => a.id === accountId);
+    if (!account) return;
+
+    const originalAmount = account.originalAmount ?? account.amount;
+    const payments = getPayments().filter(p => p.accountId === accountId);
+    const lastPayment = payments[payments.length - 1];
+
+    if (lastPayment) {
+      addReversal({
+        id: Date.now().toString(),
+        accountId,
+        reason,
+        reversedAt: new Date().toISOString(),
+        paymentMethod: lastPayment.paymentMethod,
+        reversedAmount: lastPayment.amount,
+        paymentType: lastPayment.type,
+      });
+    }
+
+    setAccounts(prev => prev.map(acc =>
+      acc.id === accountId
+        ? { ...acc, amount: originalAmount, paid: false }
+        : acc
+    ));
+
+    closeStornoModal();
   };
 
   return (
@@ -106,8 +153,9 @@ const AccountsReceivable: React.FC = () => {
         <AccountsReceivableTable 
           accounts={accounts} 
           onEdit={openEditModal}
-            onDelete={handleDeleteAccount}
-            onPay={openPayModal}
+          onDelete={handleDeleteAccount}
+          onPay={openPayModal}
+          onStorno={openStornoModal}
         />
       </div>
 
@@ -125,6 +173,14 @@ const AccountsReceivable: React.FC = () => {
         accountId={payAccount?.id ?? null}
         accountAmount={payAccount?.amount}
         onPay={handleConfirmPayment}
+      />
+
+      <StornoModal
+        isOpen={isStornoOpen}
+        onClose={closeStornoModal}
+        accountId={stornoAccount?.id ?? null}
+        accountDescription={stornoAccount?.description ?? ''}
+        onConfirmStorno={handleConfirmStorno}
       />
     </div>
   );

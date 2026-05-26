@@ -1,4 +1,4 @@
-import { PenBox, Trash2 } from 'lucide-react';
+import { PenBox, Trash2, ArrowLeftRight } from 'lucide-react';
 import React from 'react'
 
 interface Account {
@@ -8,6 +8,7 @@ interface Account {
   description: string;
   amount: number;
   bankAccount: string;
+  paid?: boolean;
 }
 
 interface AccountsPayableTableProps {
@@ -15,9 +16,10 @@ interface AccountsPayableTableProps {
   onEdit: (account: Account) => void;
   onDelete: (id: string) => void;
   onPay: (account: Account) => void;
+  onStorno?: (account: Account) => void;
 }
 
-const AccountsPayableTable: React.FC<AccountsPayableTableProps> = ({ accounts, onEdit, onDelete, onPay }) => {
+const AccountsPayableTable: React.FC<AccountsPayableTableProps> = ({ accounts, onEdit, onDelete, onPay, onStorno }) => {
 
   return (
     <div className="overflow-x-auto">
@@ -76,12 +78,23 @@ const AccountsPayableTable: React.FC<AccountsPayableTableProps> = ({ accounts, o
                   >
                     <PenBox className="inline-block w-4 h-4" />
                   </button>
-                  <button
-                    onClick={() => onPay(account)}
-                    className="text-green-600 hover:text-green-900 mr-3"
-                  >
-                    Pagar conta
-                  </button>
+                  {account.amount === 0 ? (
+                    <button
+                      onClick={() => onStorno?.(account)}
+                      aria-label="Estornar conta"
+                      title="Estornar"
+                      className="text-orange-600 hover:text-orange-900 mr-3"
+                    >
+                      <ArrowLeftRight className="inline-block w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => onPay(account)}
+                      className="text-green-600 hover:text-green-900 mr-3"
+                    >
+                      Pagar conta
+                    </button>
+                  )}
                   <button
                     onClick={() => onDelete(account.id)}
                     aria-label="Excluir conta a pagar"
